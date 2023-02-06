@@ -1,0 +1,43 @@
+RG=AZUREB25
+
+1.create resource group
+   az group create --location eastus --name ${RG}
+
+2. create vNET1 10.50.0.0/16
+
+az network vnet create --resource-group ${RG} --name vNET1 --address-prefix 10.50.0.0/16 \
+--subnet-name subnet-1 --subnet-prefix 10.50.1.0/24 --location eastus
+
+3.create subnet 1 2 3
+az network vnet subnet create --resource-group ${RG} --name vNET1 --subnet-name subnet-2 --subnet-prefix 10.50.2.0/24
+az network  subnet create --resource group ${RG} --vnet-name vNET1 --subnet-name subnet-3 --subnet-prefix 10.50.3.0/24
+10.50.1.0/24
+10.50.2.0/24
+10.50.3.0/24
+4. create NSG
+az nsg create -g ${RG} -n NSG1
+az nsg rules create -g ${RG} -n NSG1
+
+5. deploy the vm in each subnet
+az vm create -g ${RG} --name testVM1 --image ubuntuLTS --vnet-name vNET1\
+--subnet subnet-1 --admin -username adminveer --admin-password Anjirj@04321 --size standrd_B1s\
+--nsg NSG1 --custom-data cloud-init.txt
+
+az vm create --g $(RG) --name testVM2 --image ubuntuLTS --vnet-name vNET1\
+--subnet subnet-2 --admin -username adminveer --admin-password "Anjirj@04321" --size standrd_B1s\
+--nsg NSG1 --custom-data cloud-init.txt
+
+az vm create --g $(RG) --name testVM3 --image ubuntuLTS --vnet-name vNET1\
+--subnet subnet-3 --admin -username adminveer --admin-password "Anjirj@04321" --size standrd_B1s\
+--nsg NSG1 --custom-data cloud-init.txt
+
+--------------------------------------------------------------------------------------------------------------------
+NSG:
+------
+RG=AZUREB20NSG
+az group create --location eastus -n ${RG}
+
+az network vnet create -g ${RG} -n ${RG}-vNET1 --address-prefix 10.1.0.0/16\
+--subnet-name ${RG}-subnet-1 --subnet-prefix 10.1.1.0/24 -l eastus
+
+az network nsg create -g ${RG} -n ${RG}-NSG1
